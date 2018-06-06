@@ -11,10 +11,50 @@ struct Line {
     key: Vec<u8>
 }
 
+struct Counter {
+    set: HashSet<Vec<u8>>,
+    spent: u32,
+    total: u32,
+    size: u32,
+}
+
+impl Counter {
+
+    fn new(size : u32) -> Counter {
+        Counter {
+            set: HashSet::new(),
+            spent: 0,
+            total: 0,
+            size,
+        }
+    }
+
+    pub fn count(&mut self, line: &Line) {
+        if line.height % self.size == 0 {
+            self.set = HashSet::new();
+        }
+
+        if line.input {
+            if self.set.contains(&line.key) {
+                self.spent = self.spent + 1;
+            }
+        } else {
+            self.set.insert(line.key.clone());
+            self.total = self.total+1
+        }
+    }
+
+    fn print(&self) {
+        println!("size: {} total: {} spent: {} ratio:{}", self.size, self.total, self.spent, self.spent as f64 / self.total as f64);
+    }
+}
+
 fn main() {
-    let mut set = HashSet::new();
-    let mut n_input = 0u32;
-    let mut n_output = 0u32;
+    let sizes = [2u32,4,8,16,32,64,128,256,512,1024,2016,2048,4096,8192,16384,32768,65536];
+    let mut counters : Vec<Counter> = Vec::new();
+    for size in sizes.iter() {
+        counters.push(Counter::new(size.clone()));
+    }
     loop {
         let mut buffer = String::new();
         match io::stdin().read_line(&mut buffer) {
@@ -25,22 +65,17 @@ fn main() {
                 //println!("{}", buffer);
                 let line : Vec<&str> = buffer.split_whitespace().collect();
                 let line = parse(line);
-                //println!("{:?}", line);
-                if line.input {
-                    set.remove(&line.key);
-                    n_input = n_input +1;
-                } else {
-                    set.insert(line.key.clone());
-                    n_output = n_output +1;
-                }
 
+                for current_counter in counters.iter_mut() {
+                    current_counter.count(&line);
+                }
             }
             Err(error) => panic!("error: {}", error),
         }
     }
-    println!("set size: {}" , set.len());
-    println!("n_input: {}" , n_input);
-    println!("n_output: {}" , n_output);
+    for current_counter in counters {
+        current_counter.print();
+    }
 }
 
 fn parse(line_str : Vec<&str>) -> Line {
@@ -49,7 +84,7 @@ fn parse(line_str : Vec<&str>) -> Line {
     let mut key = HEXLOWER.decode(line_str[2].as_bytes()).unwrap();
     let num = transform_u32_to_array_of_u8(line_str[3].parse::<u32>().unwrap() );
     if input {
-        key.reverse()
+        key.reverse();  //bitcoin-iterate serve the tx hash in big endian while tx input in little endian
     }
     key.extend(num.to_vec());
 
