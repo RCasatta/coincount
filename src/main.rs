@@ -29,7 +29,7 @@ impl Counter {
 
     pub fn count(&mut self, line: &Line) {
         if line.height % self.size == 0 {
-            self.set.clear();
+            self.set = HashSet::new();
         }
 
         if line.input {
