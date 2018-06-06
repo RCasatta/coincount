@@ -1,0 +1,7 @@
+[package]
+name = "coincount"
+version = "0.1.0"
+authors = ["Riccardo Casatta <riccardo@casatta.it>"]
+
+[dependencies]
+data-encoding = "2.1.1"
