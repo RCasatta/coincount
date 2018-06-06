@@ -14,7 +14,6 @@ struct Line {
 struct Counter {
     set: HashSet<Vec<u8>>,
     spent: u32,
-    total: u32,
     size: u32,
 }
 
@@ -24,7 +23,6 @@ impl Counter {
         Counter {
             set: HashSet::new(),
             spent: 0,
-            total: 0,
             size,
         }
     }
@@ -40,12 +38,11 @@ impl Counter {
             }
         } else {
             self.set.insert(line.key.clone());
-            self.total = self.total+1
         }
     }
 
-    fn print(&self) {
-        println!("size: {} total: {} spent: {} ratio:{}", self.size, self.total, self.spent, self.spent as f64 / self.total as f64);
+    fn print(&self, total : u32) {
+        println!("size: {} spent: {} ratio:{}", self.size, self.spent, self.spent as f64 / total as f64);
     }
 }
 
@@ -55,6 +52,7 @@ fn main() {
     for size in sizes.iter() {
         counters.push(Counter::new(size.clone()));
     }
+    let mut total = 0u32;
     loop {
         let mut buffer = String::new();
         match io::stdin().read_line(&mut buffer) {
@@ -69,12 +67,17 @@ fn main() {
                 for current_counter in counters.iter_mut() {
                     current_counter.count(&line);
                 }
+                if !line.input {
+                    total = total + 1;
+                }
             }
             Err(error) => panic!("error: {}", error),
         }
     }
+
+    println!("Total outputs {}", total);
     for current_counter in counters {
-        current_counter.print();
+        current_counter.print(total);
     }
 }
 
