@@ -50,7 +50,7 @@ impl Counter {
 }
 
 fn main() {
-    let sizes = [2u32,4,8,16,32,64,144,256,1024,4096,16384,65536];
+    let sizes = [2u32,4,16,64,144,256,1024,4096,16384];
     let mut counters : Vec<Counter> = Vec::new();
     for size in sizes.iter() {
         counters.push(Counter::new(size.clone()));
