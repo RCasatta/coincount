@@ -65,6 +65,7 @@ impl Counter {
 
     fn save_graph(&self) {
         if self.list.len()>0 {
+
             let mut reduced = self.list.clone();
             while reduced.len()>2000 {
                 reduced=reduced
@@ -88,7 +89,7 @@ impl Counter {
 }
 
 fn main() {
-    let sizes = [2u32,4,16,64,144,256,1024,4096,16384];
+    let sizes = [2u32,4,16,64,144,256,1024,4096];
     let (sender, receiver) = sync_channel(1000);
 
     let mut counters : Vec<Counter> = Vec::new();
@@ -97,7 +98,7 @@ fn main() {
     }
     let mut total = 0u32;
 
-    thread::spawn(move || {
+    let t = thread::spawn(move || {
         loop {
             match receiver.recv().unwrap() {
                 Some(line) => {
@@ -137,6 +138,7 @@ fn main() {
         }
     }
     sender.send(None).unwrap();
+    t.join().unwrap();
 }
 
 
