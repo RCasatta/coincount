@@ -3,7 +3,7 @@ name = "coincount"
 version = "0.1.0"
 dependencies = [
  "data-encoding 2.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "plotlib 0.3.0 (git+https://github.com/milliams/plotlib/?rev=c732707b9bb29d51d42485d321df96d9d4d3d4b0)",
+ "plotlib 0.3.0 (git+https://github.com/RCasatta/plotlib)",
 ]
 
 [[package]]
@@ -14,7 +14,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "plotlib"
 version = "0.3.0"
-source = "git+https://github.com/milliams/plotlib/?rev=c732707b9bb29d51d42485d321df96d9d4d3d4b0#c732707b9bb29d51d42485d321df96d9d4d3d4b0"
+source = "git+https://github.com/RCasatta/plotlib#c732707b9bb29d51d42485d321df96d9d4d3d4b0"
 dependencies = [
  "svg 0.5.11 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -26,5 +26,5 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [metadata]
 "checksum data-encoding 2.1.1 (registry+https://github.com/rust-lang/crates.io-index)" = "67df0571a74bf0d97fb8b2ed22abdd9a48475c96bd327db968b7d9cace99655e"
-"checksum plotlib 0.3.0 (git+https://github.com/milliams/plotlib/?rev=c732707b9bb29d51d42485d321df96d9d4d3d4b0)" = "<none>"
+"checksum plotlib 0.3.0 (git+https://github.com/RCasatta/plotlib)" = "<none>"
 "checksum svg 0.5.11 (registry+https://github.com/rust-lang/crates.io-index)" = "7518a18ac78da03c41ca0611128c6d8adf1efae0773c337d6c19793dce860c9b"

@@ -4,8 +4,11 @@ extern crate plotlib;
 use std::io;
 use data_encoding::HEXLOWER;
 use std::collections::HashSet;
-use plotlib::line::Line;
 use std::iter::Iterator;
+use std::sync::mpsc::sync_channel;
+use std::thread;
+use plotlib::view::ContinuousView;
+use plotlib::style::Line;
 
 #[derive(Debug)]
 struct InputLine {
@@ -70,8 +73,8 @@ impl Counter {
         if elements.len()>0 {
             println!("{:?}", elements);
             //let elements = self.list.enumerate().map(|el| (el.0 as f64, el.1)).collect();
-            let l1 = Line::new(&elements[..]);
-            let v = plotlib::view::ContinuousView::new().add(&l1);
+            let l1 = plotlib::line::Line::new(&elements[..]).style( plotlib::line::Style::new().colour("burlywood"));
+            let v = ContinuousView::new().add(&l1);
             plotlib::page::Page::single(&v).save(format!("{}.svg", self.size));
         }
 
@@ -80,11 +83,38 @@ impl Counter {
 
 fn main() {
     let sizes = [2u32,4,16,64,144,256,1024,4096,16384];
+    let (sender, receiver) = sync_channel(1000);
+
     let mut counters : Vec<Counter> = Vec::new();
     for size in sizes.iter() {
         counters.push(Counter::new(size.clone()));
     }
     let mut total = 0u32;
+
+    thread::spawn(move || {
+        loop {
+            match receiver.recv().unwrap() {
+                Some(line) => {
+                    for current_counter in counters.iter_mut() {
+                        current_counter.count(&line);
+                    }
+                    if !line.input {
+                        total = total + 1;
+                    }
+                },
+                None => {
+                    println!("Fin");
+                    break;
+                }
+            };
+        }
+        println!("Total outputs {}", total);
+        for current_counter in counters {
+            current_counter.print(total);
+            current_counter.save_graph();
+        }
+    });
+
     loop {
         let mut buffer = String::new();
         match io::stdin().read_line(&mut buffer) {
@@ -95,25 +125,12 @@ fn main() {
                 //println!("{}", buffer);
                 let line : Vec<&str> = buffer.split_whitespace().collect();
                 let line = parse(line);
-
-                for current_counter in counters.iter_mut() {
-                    current_counter.count(&line);
-                }
-                if !line.input {
-                    total = total + 1;
-                }
+                sender.send(Some(line)).unwrap();
             }
             Err(error) => panic!("error: {}", error),
         }
     }
-
-    println!("Total outputs {}", total);
-    for current_counter in counters {
-        current_counter.print(total);
-        current_counter.save_graph();
-
-    }
-
+    sender.send(None).unwrap();
 }
 
 
