@@ -1,0 +1,13 @@
+./bitcoin-iterate/bitcoin-iterate -q --blockdir /mnt/optane/bitcoin/blocks/ --cache /tmp  --input 'i %bN %ih %ii' --output 'o %bN %th %oN' --start 393216 --end 458752 | coincount/target/release/coincount
+
+
+Total outputs 264185587
+size: 2 spent: 11791058 ratio:0.04463172322871649
+size: 4 spent: 29846090 ratio:0.11297395266305728
+size: 16 spent: 72543182 ratio:0.2745917475051355
+size: 64 spent: 113168726 ratio:0.4283682818775424
+size: 144 spent: 134294070 ratio:0.508332311103709
+size: 256 spent: 148824781 ratio:0.5633342177747191
+size: 1024 spent: 179345566 ratio:0.6788620379960395
+size: 4096 spent: 205755628 ratio:0.7788298761355213
+size: 16384 spent: 224448158 ratio:0.849585174379706

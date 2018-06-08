@@ -1,11 +1,14 @@
 extern crate data_encoding;
+extern crate plotlib;
 
 use std::io;
 use data_encoding::HEXLOWER;
 use std::collections::HashSet;
+use plotlib::line::Line;
+use std::iter::Iterator;
 
 #[derive(Debug)]
-struct Line {
+struct InputLine {
     input: bool,
     height: u32,
     key: Vec<u8>
@@ -13,8 +16,10 @@ struct Line {
 
 struct Counter {
     set: HashSet<Vec<u8>>,
+    last_spent: u32,
     spent: u32,
     size: u32,
+    list: Vec<f64>,
 }
 
 impl Counter {
@@ -22,14 +27,24 @@ impl Counter {
     fn new(size : u32) -> Counter {
         Counter {
             set: HashSet::new(),
+            last_spent: 0,
             spent: 0,
             size,
+            list: vec![],
         }
     }
 
-    pub fn count(&mut self, line: &Line) {
+    pub fn count(&mut self, line: &InputLine) {
         if line.height % self.size == 0 {
+            if self.set.len() > 0 {
+                let i = self.spent - self.last_spent;
+                if i > 0 {
+                    self.list.push(i as f64 / self.set.len() as f64);
+                }
+            }
+
             self.set = HashSet::new();
+            self.last_spent = self.spent;
         }
 
         if line.input {
@@ -43,6 +58,23 @@ impl Counter {
 
     fn print(&self, total : u32) {
         println!("size: {} spent: {} ratio:{}", self.size, self.spent, self.spent as f64 / total as f64);
+    }
+
+    fn save_graph(&self) {
+        let mut elements = Vec::new();
+        let mut index = 2f64;
+        for el in &self.list {
+            elements.push((index.clone(),el.clone()));
+            index = index +1.0;
+        }
+        if elements.len()>0 {
+            println!("{:?}", elements);
+            //let elements = self.list.enumerate().map(|el| (el.0 as f64, el.1)).collect();
+            let l1 = Line::new(&elements[..]);
+            let v = plotlib::view::ContinuousView::new().add(&l1);
+            plotlib::page::Page::single(&v).save(format!("{}.svg", self.size));
+        }
+
     }
 }
 
@@ -78,10 +110,14 @@ fn main() {
     println!("Total outputs {}", total);
     for current_counter in counters {
         current_counter.print(total);
+        current_counter.save_graph();
+
     }
+
 }
 
-fn parse(line_str : Vec<&str>) -> Line {
+
+fn parse(line_str : Vec<&str>) -> InputLine {
     let input = "i".eq(line_str[0]);
     let height = line_str[1].parse::<u32>().unwrap();
     let mut key = HEXLOWER.decode(line_str[2].as_bytes()).unwrap();
@@ -91,7 +127,7 @@ fn parse(line_str : Vec<&str>) -> Line {
     }
     key.extend(num.to_vec());
 
-    Line {
+    InputLine {
         input,
         height,
         key,

@@ -5,3 +5,7 @@ authors = ["Riccardo Casatta <riccardo@casatta.it>"]
 
 [dependencies]
 data-encoding = "2.1.1"
+
+[dependencies.plotlib]
+git = "https://github.com/milliams/plotlib/"
+rev = "c732707b9bb29d51d42485d321df96d9d4d3d4b0"
