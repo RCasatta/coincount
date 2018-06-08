@@ -64,14 +64,20 @@ impl Counter {
     }
 
     fn save_graph(&self) {
-        let mut elements = Vec::new();
-        let mut index = 2f64;
-        for el in &self.list {
-            elements.push((index.clone(),el.clone()));
-            index = index +1.0;
-        }
-        if elements.len()>0 {
-            println!("{:?}", elements);
+        if self.list.len()>0 {
+            let mut reduced = self.list.clone();
+            while reduced.len()>2000 {
+                reduced=reduced
+                    .chunks(2)
+                    .map(|el| (el[0] + el.get(1).unwrap_or(&el[0]))*0.5 )
+                    .collect();
+            }
+            let mut elements = Vec::new();
+            let mut index = 2f64;
+            for el in &reduced {
+                elements.push((index.clone(),el.clone()));
+                index = index +1.0;
+            }
             //let elements = self.list.enumerate().map(|el| (el.0 as f64, el.1)).collect();
             let l1 = plotlib::line::Line::new(&elements[..]).style( plotlib::line::Style::new().colour("burlywood"));
             let v = ContinuousView::new().add(&l1);
