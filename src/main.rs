@@ -63,23 +63,26 @@ impl Counter {
         println!("size: {} spent: {} ratio:{}", self.size, self.spent, self.spent as f64 / total as f64);
     }
 
-    fn save_graph(&self) {
+    fn save_graph(&self, max_height : u32) {
         if self.list.len()>0 {
             let mut reduced = self.list.clone();
-            let mut coeff = 1f64;
-            while reduced.len()>500 {
+
+            while reduced.len()>400 {
                 reduced=reduced
                     .chunks(2)
                     .map(|el| (el[0] + el.get(1).unwrap_or(&el[0]))*0.5 )
                     .collect();
-                coeff = coeff * 2.0;
+
             }
             let mut elements = Vec::new();
-            let size = self.size as f64;
-            let mut block = size.clone();
+            let start = self.size as f64;
+            let end = max_height as f64;
+            let step = (end-start)/(reduced.len() as f64);
+            let mut current = start;
+
             for el in &reduced {
-                elements.push((block.clone(),el.clone()));
-                block = block +  size * coeff;
+                elements.push((current.clone(),el.clone()));
+                current = current + step;
             }
             //let elements = self.list.enumerate().map(|el| (el.0 as f64, el.1)).collect();
             let l1 = plotlib::line::Line::new(&elements[..]).style( plotlib::line::Style::new().colour("red"));
@@ -102,6 +105,7 @@ fn main() {
         counters.push(Counter::new(size.clone()));
     }
     let mut total = 0u32;
+    let mut max_height = 0u32;
 
     let t = thread::spawn(move || {
         loop {
@@ -115,6 +119,7 @@ fn main() {
                         if total % 1000000 == 0 {
                             println!("Height is {} total outputs {}", line.height, total);
                         }
+                        max_height = line.height;
                     }
 
                 },
@@ -127,7 +132,7 @@ fn main() {
         println!("Total outputs {}", total);
         for current_counter in counters {
             current_counter.print(total);
-            current_counter.save_graph();
+            current_counter.save_graph(max_height);
         }
     });
 
