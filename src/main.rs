@@ -82,8 +82,11 @@ impl Counter {
                 block = block +  size * n_reduce;
             }
             //let elements = self.list.enumerate().map(|el| (el.0 as f64, el.1)).collect();
-            let l1 = plotlib::line::Line::new(&elements[..]).style( plotlib::line::Style::new().colour("burlywood"));
-            let v = ContinuousView::new().add(&l1);
+            let l1 = plotlib::line::Line::new(&elements[..]).style( plotlib::line::Style::new().colour("red"));
+            let v = ContinuousView::new()
+                .add(&l1)
+                .x_label(format!("Historical % of TXO created and spent in the same {} window", self.size))
+                .y_label("%");
             plotlib::page::Page::single(&v).save(format!("{}.svg", self.size));
         }
 
