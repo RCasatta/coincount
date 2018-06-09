@@ -112,10 +112,11 @@ fn main() {
                     }
                     if !line.input {
                         total = total + 1;
+                        if total % 1000000 == 0 {
+                            println!("Height is {} total outputs {}", line.height, total);
+                        }
                     }
-                    if total % 100000 == 0 {
-                        println!("Height is {} total input {}", line.height, total);
-                    }
+
                 },
                 None => {
                     println!("Fin");
