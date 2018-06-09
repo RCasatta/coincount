@@ -63,7 +63,7 @@ impl Counter {
         println!("size: {} spent: {} ratio:{}", self.size, self.spent, self.spent as f64 / total as f64);
     }
 
-    fn save_graph(&self, max_height :u32) {
+    fn save_graph(&self) {
         if self.list.len()>0 {
             let mut reduced = self.list.clone();
             let mut n_reduce = 0f64;
@@ -99,7 +99,6 @@ fn main() {
         counters.push(Counter::new(size.clone()));
     }
     let mut total = 0u32;
-    let mut max_height  = 0u32;
 
     let t = thread::spawn(move || {
         loop {
@@ -111,7 +110,6 @@ fn main() {
                     if !line.input {
                         total = total + 1;
                     }
-                    max_height=line.heignt;
                 },
                 None => {
                     println!("Fin");
