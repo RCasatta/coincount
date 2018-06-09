@@ -66,15 +66,14 @@ impl Counter {
     fn save_graph(&self) {
         if self.list.len()>0 {
             let mut reduced = self.list.clone();
-            let mut n_reduce = 0f64;
+            let mut coeff = 1f64;
             while reduced.len()>500 {
                 reduced=reduced
                     .chunks(2)
                     .map(|el| (el[0] + el.get(1).unwrap_or(&el[0]))*0.5 )
                     .collect();
-                n_reduce = n_reduce + 1.0;
+                coeff = coeff * 2.0;
             }
-            let coeff = 2f64.powf(n_reduce);
             let mut elements = Vec::new();
             let size = self.size as f64;
             let mut block = size.clone();
