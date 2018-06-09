@@ -114,7 +114,7 @@ fn main() {
                     if !line.input {
                         total = total + 1;
                     }
-                    if line.height % 1000 == 0 {
+                    if total % 100000 == 0 {
                         println!("Height is {} total input {}", line.height, total);
                     }
                 },
