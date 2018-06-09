@@ -63,21 +63,23 @@ impl Counter {
         println!("size: {} spent: {} ratio:{}", self.size, self.spent, self.spent as f64 / total as f64);
     }
 
-    fn save_graph(&self) {
+    fn save_graph(&self, max_height :u32) {
         if self.list.len()>0 {
-
             let mut reduced = self.list.clone();
-            while reduced.len()>2000 {
+            let mut n_reduce = 0f64;
+            while reduced.len()>500 {
                 reduced=reduced
                     .chunks(2)
                     .map(|el| (el[0] + el.get(1).unwrap_or(&el[0]))*0.5 )
                     .collect();
+                n_reduce = n_reduce + 1.0;
             }
             let mut elements = Vec::new();
-            let mut index = 2f64;
+            let size = self.size as f64;
+            let mut block = size.clone();
             for el in &reduced {
-                elements.push((index.clone(),el.clone()));
-                index = index +1.0;
+                elements.push((block.clone(),el.clone()));
+                block = block +  size * n_reduce;
             }
             //let elements = self.list.enumerate().map(|el| (el.0 as f64, el.1)).collect();
             let l1 = plotlib::line::Line::new(&elements[..]).style( plotlib::line::Style::new().colour("burlywood"));
@@ -89,7 +91,7 @@ impl Counter {
 }
 
 fn main() {
-    let sizes = [2u32,4,16,64,144,256,1024,4096];
+    let sizes = [2u32,4,16,64,144,256,1024,4096,16384,65536];
     let (sender, receiver) = sync_channel(1000);
 
     let mut counters : Vec<Counter> = Vec::new();
@@ -97,6 +99,7 @@ fn main() {
         counters.push(Counter::new(size.clone()));
     }
     let mut total = 0u32;
+    let mut max_height  = 0u32;
 
     let t = thread::spawn(move || {
         loop {
@@ -108,6 +111,7 @@ fn main() {
                     if !line.input {
                         total = total + 1;
                     }
+                    max_height=line.heignt;
                 },
                 None => {
                     println!("Fin");
