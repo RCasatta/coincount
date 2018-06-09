@@ -74,12 +74,13 @@ impl Counter {
                     .collect();
                 n_reduce = n_reduce + 1.0;
             }
+            let coeff = 2f64.pow(n_reduce);
             let mut elements = Vec::new();
             let size = self.size as f64;
             let mut block = size.clone();
             for el in &reduced {
                 elements.push((block.clone(),el.clone()));
-                block = block +  size * n_reduce;
+                block = block +  size * coeff;
             }
             //let elements = self.list.enumerate().map(|el| (el.0 as f64, el.1)).collect();
             let l1 = plotlib::line::Line::new(&elements[..]).style( plotlib::line::Style::new().colour("red"));
