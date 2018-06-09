@@ -74,7 +74,7 @@ impl Counter {
                     .collect();
                 n_reduce = n_reduce + 1.0;
             }
-            let coeff = 2f64.pow(n_reduce);
+            let coeff = 2f64.powf(n_reduce);
             let mut elements = Vec::new();
             let size = self.size as f64;
             let mut block = size.clone();
