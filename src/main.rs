@@ -88,7 +88,9 @@ impl Counter {
             let l1 = plotlib::line::Line::new(&elements[..]).style( plotlib::line::Style::new().colour("red"));
             let v = ContinuousView::new()
                 .add(&l1)
-                .x_label(format!("Historical % of TXO created and spent in the same {} window", self.size))
+                .y_range(0.0, 1.0)
+                .x_range( 0.0, max_height as f64)
+                .x_label(format!("Historical % of TXO created and spent in the same window of {} blocks", self.size))
                 .y_label("%");
             plotlib::page::Page::single(&v).save(format!("{}.svg", self.size));
         }
